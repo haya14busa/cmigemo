@@ -3,7 +3,7 @@
  * migemo.c -
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 21-Jun-2004.
+ * Last Change: 21-Jan-2005.
  */
 
 #include <stdio.h>
@@ -432,11 +432,34 @@ query_a_word(migemo* object, unsigned char* query)
 {
     unsigned char* zen;
     unsigned char* han;
+    unsigned char* lower;
+    int len = strlen(query);
 
     /* query©M‚Í‚à‚¿‚ë‚ñŒó•â‚É‰Á‚¦‚é */
     object->addword(object, query);
     /* query‚»‚Ì‚à‚Ì‚Å‚Ì«‘ˆø‚« */
-    add_mnode_query(object, query);
+    lower = malloc(len + 1);
+    if (!lower)
+	add_mnode_query(object, query);
+    else
+    {
+	int i = 0, step;
+
+	// MB‚ğl—¶‚µ‚½‘å•¶š¨¬•¶š•ÏŠ·
+	while (i <= len)
+	{
+	    if (!object->char2int
+		    || (step = object->char2int(&query[i], NULL)) < 1)
+		step = 1;
+	    if (step == 1 && isupper(query[i]))
+		lower[i] = tolower(query[i]);
+	    else
+		memcpy(&lower[i], &query[i], step);
+	    i += step;
+	}
+	add_mnode_query(object, lower);
+	free(lower);
+    }
 
     /* query‚ğ‘SŠp‚É‚µ‚ÄŒó•â‚É‰Á‚¦‚é */
     zen = romaji_convert2(object->han2zen, query, NULL, 0);
