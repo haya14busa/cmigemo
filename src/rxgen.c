@@ -167,10 +167,19 @@ rxgen_close(rxgen* object)
     }
 }
 
+    static rnode*
+search_rnode(rnode* node, unsigned int code)
+{
+    while (node && node->code != code)
+	node = node->next;
+    return node;
+}
+
     int
 rxgen_add(rxgen* object, const unsigned char* word)
 {
     rnode **ppnode;
+    rnode *pnode;
 
     if (!object || !word)
 	return 0;
@@ -182,8 +191,8 @@ rxgen_add(rxgen* object, const unsigned char* word)
 	int len = rxgen_call_char2int(object, word, &code);
 	/*printf("rxgen_call_char2int: code=%08x\n", code);*/
 
-	/* 終了条件 */
-	if (!code)
+	/* 入力パターンが尽きたら終了 */
+	if (code == 0)
 	{
 	    /* 入力パターンよりも長い既存パターンは破棄する */
 	    if (*ppnode)
@@ -193,20 +202,27 @@ rxgen_add(rxgen* object, const unsigned char* word)
 	    }
 	    break;
 	}
-
-	while (*ppnode && (*ppnode)->code != code)
-	    ppnode = &(*ppnode)->next;
-
-	if (!*ppnode)
+	pnode = search_rnode(*ppnode, code);
+	if (pnode == NULL)
 	{
-	    /* 未知の長いパターンを辿って記憶する。 */
-	    *ppnode = rnode_new();
-	    (*ppnode)->code = code;
+	    /* codeを持つノードが無い場合、作成追加する */
+	    pnode = rnode_new();
+	    pnode->code = code;
+	    pnode->next = *ppnode;
+	    *ppnode = pnode;
 	}
-	else if (!(*ppnode)->child)
-	    break; /* 既存パターンより長い入力パターンは破棄する */
-
-	ppnode = &(*ppnode)->child;
+	else if (pnode->child == NULL)
+	{
+	    /*
+	     * codeを持つノードは有るが、その子供が無い場合、それ以降の入力
+	     * パターンは破棄する。例:
+	     *     あかい + あかるい -> あか
+	     *	   たのしい + たのしみ -> たのし
+	     */
+	    break;
+	}
+	/* 子ノードを辿って深い方へ注視点を移動 */
+	ppnode = &pnode->child;
 	word += len;
     }
     return 1;

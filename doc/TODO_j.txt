@@ -1,5 +1,5 @@
  vim:set ts=8 sts=4 sw=4 tw=0 ft=memo:
- Last Change: 19-Jun-2004.
+ Last Change: 20-Jun-2004.
 
 TODO
     エスケープする文字をカスタマイズ可能にする
@@ -13,6 +13,7 @@ TODO
     ローマ字変換に「ステート残り」を導入
 
 DONE 1.2+
+    パターンの生成を高速化(rxget.c:rxgen_add)
     VS6用プロジェクトファイルを更新、位置変更
     全角→半角変換を追加
     ローマ字変換でマルチバイト文字を考慮(Vim掲示板:1281)
