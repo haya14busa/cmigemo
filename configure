@@ -3,7 +3,7 @@
 #
 # configure - Easy configuration script
 #
-# Last Change: 07-Dec-2003.
+# Last Change: 19-Jun-2004.
 # Author & Maintainer: MURAOKA Taro <koron@tka.att.ne.jp>
 
 config_out=config.mk
@@ -34,7 +34,7 @@ fi
 if CHECK_COMMAND qkc ; then
   PROGRAM_ENCODEFILTER="qkc -q -u"
 elif CHECK_COMMAND nkf ; then
-  PROGRAM_ENCODEFILTER="nkf"
+  PROGRAM_ENCODEFILTER="nkf -x"
 else
   echo "ERROR: Require qkc or nkf installed for encode filter."
   exit 1
