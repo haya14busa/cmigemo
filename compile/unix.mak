@@ -2,7 +2,7 @@
 #
 # UNIXŒn‹¤’ÊMakefile
 #
-# Last Change:	29-Oct-2003.
+# Last Change:	19-Jun-2004.
 # Base Idea:	AIDA Shinra
 # Maintainer:	MURAOKA Taro <koron@tka.att.ne.jp>
 
@@ -43,6 +43,7 @@ install-mkdir:
 	$(MKDIR) $(dictdir)
 	$(MKDIR) $(dictdir)/cp932
 	$(MKDIR) $(dictdir)/euc-jp
+	$(MKDIR) $(dictdir)/utf-8
 
 install-dict:
 	$(INSTALL_DATA) dict/migemo-dict $(dictdir)/cp932
@@ -54,6 +55,12 @@ install-dict:
 	  $(INSTALL_DATA) dict/euc-jp.d/han2zen.dat $(dictdir)/euc-jp; \
 	  $(INSTALL_DATA) dict/euc-jp.d/hira2kata.dat $(dictdir)/euc-jp; \
 	  $(INSTALL_DATA) dict/euc-jp.d/roma2hira.dat $(dictdir)/euc-jp; \
+	fi
+	if [ -d dict/utf-8.d ]; then \
+	  $(INSTALL_DATA) dict/utf-8.d/migemo-dict $(dictdir)/utf-8; \
+	  $(INSTALL_DATA) dict/utf-8.d/han2zen.dat $(dictdir)/utf-8; \
+	  $(INSTALL_DATA) dict/utf-8.d/hira2kata.dat $(dictdir)/utf-8; \
+	  $(INSTALL_DATA) dict/utf-8.d/roma2hira.dat $(dictdir)/utf-8; \
 	fi
 
 install: $(outdir)cmigemo$(EXEEXT) $(libmigemo_DSO) install-mkdir install-dict install-lib
