@@ -1,7 +1,8 @@
  vim:set ts=8 sts=4 sw=4 tw=0 ft=memo:
- Last Change: 20-Jun-2004.
+ Last Change: 29-Sep-2004.
 
 TODO
+    COM/XPCOMのインターフェースを定義し、グルーコードを作成
     エスケープする文字をカスタマイズ可能にする
 	もしくは各種言語用の出力を用意する
     ライセンス修正
