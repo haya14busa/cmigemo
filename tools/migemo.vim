@@ -48,21 +48,52 @@ else
   nnoremap <silent> <leader>mi :call <SID>MigemoSearch('')<cr>
 
   function! s:MigemoSearch(word)
-    if executable('cmigemo') == ''
+    if executable('cmigemo') != ''
+      let retval = a:word != '' ? a:word : input('MIGEMO:')
+      if retval == ''
+        return
+      endif
+      if has('iconv') && $HOMEDRIVE != ''
+        let retval = iconv(retval, 'cp932', 'euc-jp')
+      elseif &encoding != 'euc-jp'
+        let retval = iconv(retval, &encoding, 'euc-jp')
+      endif
+      "let retval = system('cmigemo -v -w "'.retval.'" -d "'.g:migemodict.'"')
+      let retval = system('cmigemo -v -w '.retval.' -d "'.g:migemodict.'"')
+      if retval == ''
+        return
+      endif
+    elseif executable('migemo') != ''
+      if filereadable(g:migemodict.'.idx')
+        let retval = a:word != '' ? a:word : input('MIGEMO:')
+        if retval == ''
+          return
+        endif
+        let retval = system('echo "'.retval.'" | migemo -t egrep -d "'.g:migemodict.'"')
+        if retval == ''
+          return
+        endif
+    if retval[strlen(retval)-1] == "\n"
+      let retval = strpart(retval, 0, strlen(retval)-1)
+    endif
+      else
+        echohl ErrorMsg
+        echo 'Error: migemo dictionary have no index'
+        echohl None
+        return
+      endif
+    else
       echohl ErrorMsg
-      echo 'Error: cmigemo is not installed'
+      echo 'Error: cmigemo or migemo is not installed'
       echohl None
       return
     endif
+    if has('iconv') && $HOMEDRIVE != ''
+      let retval = iconv(retval, 'euc-jp', 'cp932')
+    elseif &encoding != 'euc-jp'
+      let retval = iconv(retval, 'euc-jp', &encoding)
+    endif
   
-    let retval = a:word != '' ? a:word : input('MIGEMO:')
-    if retval == ''
-      return
-    endif
-    let retval = system('cmigemo -v -w "'.retval.'" -d "'.g:migemodict.'"')
-    if retval == ''
-      return
-    endif
     let @/ = retval
     let v:errmsg = ''
     silent! normal n
