@@ -2,13 +2,14 @@
 #
 # 構成ファイルと依存関係
 #
-# Last Change:	18-Oct-2003.
+# Last Change:	16-Jun-2004.
 # Written By:	MURAOKA Taro <koron@tka.att.ne.jp>
 
 ##############################################################################
 # 構成ファイル
 #
-SRC = 	$(srcdir)filename.c \
+SRC = 	$(srcdir)charset.c \
+	$(srcdir)filename.c \
 	$(srcdir)migemo.c \
 	$(srcdir)mnode.c \
 	$(srcdir)romaji.c \
@@ -16,7 +17,8 @@ SRC = 	$(srcdir)filename.c \
 	$(srcdir)wordbuf.c \
 	$(srcdir)wordlist.c
 
-OBJ = 	$(objdir)filename.$(O) \
+OBJ = 	$(objdir)charset.$(O) \
+	$(objdir)filename.$(O) \
 	$(objdir)migemo.$(O) \
 	$(objdir)mnode.$(O) \
 	$(objdir)romaji.$(O) \
@@ -27,6 +29,8 @@ OBJ = 	$(objdir)filename.$(O) \
 ##############################################################################
 # 依存関係の設定
 #
+$(objdir)charset.$(O): $(srcdir)charset.c
+
 $(objdir)filename.$(O): $(srcdir)filename.c \
 	$(srcdir)filename.h
 
