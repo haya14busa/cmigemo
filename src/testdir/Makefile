@@ -1,5 +1,5 @@
 # vim:set ts=8 sts=8 sw=8 tw=0:
-# Last Change: 20-Jun-2004.
+# Last Change: 21-Sep-2004.
 
 DICTDIR = ../../dict
 
@@ -12,6 +12,10 @@ QSPEED_SRC = profile_speed.c $(MIGEMO_SRC)
 
 CCFLAGS = -I. -I.. -DDICTDIR=\"$(DICTDIR)\" -D_DEBUG
 CCFLAGS_PROF = -pg
+
+default: romaji
+
+all: romaji qspeed
 
 qspeed: $(QSPEED_SRC)
 	$(CC) $(CCFLAGS) -o $@ $(CCFLAGS_PROF) $(QSPEED_SRC)

@@ -3,7 +3,7 @@
  * romaji.c - ローマ字変換
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 20-Jun-2004.
+ * Last Change: 21-Sep-2004.
  */
 
 #include <stdio.h>
@@ -117,6 +117,7 @@ romanode_query(romanode* node, const unsigned char* key, int* skip,
     int nskip = 0;
     const unsigned char* key_start = key;
 
+    //printf("romanode_query: key=%s skip=%p char2int=%p\n", key, skip, char2int);
     if (node && key && *key)
     {
 	while (1)
@@ -127,10 +128,14 @@ romanode_query(romanode* node, const unsigned char* key, int* skip,
 	    {
 		++nskip;
 		if (node->value)
+		{
+		    //printf("  HERE 1\n");
 		    break;
+		}
 		if (!*++key)
 		{
 		    nskip = 0;
+		    //printf("  HERE 2\n");
 		    break;
 		}
 		node = node->child;
@@ -139,8 +144,9 @@ romanode_query(romanode* node, const unsigned char* key, int* skip,
 	    if (!node)
 	    {
 		/* 1バイトではなく1文字進める */
-		if (!char2int || (nskip = (*char2int)(key_start, NULL) < 1))
+		if (!char2int || (nskip = (*char2int)(key_start, NULL)) < 1)
 		    nskip = 1;
+		//printf("  HERE 3: nskip=%d\n", nskip);
 		break;
 	    }
 	}
@@ -348,6 +354,12 @@ romaji_load_stub(romaji* object, FILE* fp)
     return 0;
 }
 
+/**
+ * ローマ字辞書を読み込む。
+ * @param object ローマ字オブジェクト
+ * @param filename 辞書ファイル名
+ * @return 成功した場合0、失敗した場合は非0を返す。
+ */
     int
 romaji_load(romaji* object, const unsigned char* filename)
 {
@@ -406,7 +418,7 @@ romaji_convert2(romaji* object, const unsigned char* string,
 
 	    node = romanode_query(object->node, &input[i], &skip, object->char2int);
 	    VERBOSE(object, 1, printf("key=%s value=%s skip=%d\n", &input[i], node ? (char*)node->value : "null" , skip);)
-	    if (!skip)
+	    if (skip == 0)
 	    {
 		if (string[i])
 		{
