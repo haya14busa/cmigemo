@@ -3,7 +3,7 @@
  * romaji_main.c -
  *
  * Written By:  Muraoka Taro <koron@tka.att.ne.jp>
- * Last Change: 18-Oct-2003.
+ * Last Change: 18-Jun-2004.
  */
 /*
  * gcc -o romaji romaji_main.c ../romaji.c ../wordbuf.c
@@ -14,10 +14,18 @@
 #include "../romaji.h"
 
 #ifndef DICT_ROMA2HIRA
-# define DICT_ROMA2HIRA	"../dict/roma2hira.dat"
+# ifdef DICTDIR
+#  define DICT_ROMA2HIRA	(DICTDIR "/roma2hira.dat")
+# else
+#  define DICT_ROMA2HIRA	"../dict/roma2hira.dat"
+# endif
 #endif
 #ifndef DICT_HIRA2KATA
-# define DICT_HIRA2KATA	"../dict/hira2kata.dat"
+# ifdef DICTDIR
+#  define DICT_HIRA2KATA	(DICTDIR "/hira2kata.dat")
+# else
+#  define DICT_HIRA2KATA	"../dict/hira2kata.dat"
+# endif
 #endif
 
     void
