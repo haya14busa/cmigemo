@@ -2,7 +2,7 @@
 #
 # 構成ファイルと依存関係
 #
-# Last Change:	16-Jun-2004.
+# Last Change:	17-Jun-2004.
 # Written By:	MURAOKA Taro <koron@tka.att.ne.jp>
 
 ##############################################################################
@@ -29,7 +29,8 @@ OBJ = 	$(objdir)charset.$(O) \
 ##############################################################################
 # 依存関係の設定
 #
-$(objdir)charset.$(O): $(srcdir)charset.c
+$(objdir)charset.$(O): $(srcdir)charset.c \
+	$(srcdir)charset.h
 
 $(objdir)filename.$(O): $(srcdir)filename.c \
 	$(srcdir)filename.h
@@ -38,6 +39,7 @@ $(objdir)main.$(O): $(srcdir)main.c \
 	$(srcdir)migemo.h
 
 $(objdir)migemo.$(O): $(srcdir)migemo.c \
+	$(srcdir)charset.h \
 	$(srcdir)filename.h \
 	$(srcdir)wordbuf.h \
 	$(srcdir)wordlist.h \

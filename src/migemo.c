@@ -3,7 +3,7 @@
  * migemo.c -
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 04-May-2004.
+ * Last Change: 17-Jun-2004.
  */
 
 #include <stdio.h>
@@ -17,6 +17,7 @@
 #include "rxgen.h"
 #include "romaji.h"
 #include "filename.h"
+#include "charset.h"
 #include "migemo.h"
 
 #define DICT_MIGEMO "migemo-dict"
@@ -24,6 +25,7 @@
 #define DICT_HIRA2KATA "hira2kata.dat"
 #define DICT_HAN2ZEN "han2zen.dat"
 #define VOWELS_STRING "aiueo"
+#define BUFLEN_DETECT_CHARSET 4096
 
 #ifdef __BORLANDC__
 # define EXPORTS __declspec(dllexport)
@@ -38,16 +40,13 @@ struct _migemo
 {
     int enable;
     mtree_p mtree;
+    int charset;
     romaji* roma2hira;
     romaji* hira2kata;
     romaji* han2zen;
     rxgen* rx;
     MIGEMO_PROC_ADDWORD addword;
 };
-
-/*
- * migemo interfaces
- */
 
     static mtree_p
 load_mtree_dictionary(mtree_p mtree, const char* dict_file)
@@ -60,6 +59,58 @@ load_mtree_dictionary(mtree_p mtree, const char* dict_file)
     fclose(fp);
     return mtree;
 }
+
+    static mtree_p
+load_mtree_dictionary2(migemo* obj, const char* dict_file)
+{
+    if (obj->charset == CHARSET_NONE)
+    {
+	/* 辞書の文字セットにあわせて正規表現生成時の関数を変更する */
+	FILE *fp;
+	if ((fp = fopen(dict_file, "rt")) != NULL)
+	{
+	    unsigned char buf[BUFLEN_DETECT_CHARSET];
+	    int len = fread(buf, sizeof(buf[0]), sizeof(buf), fp);
+	    if (len > 0)
+	    {
+		MIGEMO_PROC_CHAR2INT char2int = NULL;
+		MIGEMO_PROC_INT2CHAR int2char = NULL;
+		obj->charset = detect_charset(buf, len);
+		switch (obj->charset)
+		{
+		    case CHARSET_CP932:
+			//printf("charset: cp932\n");
+			char2int = cp932_char2int;
+			int2char = cp932_int2char;
+			break;
+		    case CHARSET_EUCJP:
+			//printf("charset: eucjp\n");
+			char2int = eucjp_char2int;
+			int2char = eucjp_int2char;
+			break;
+		    case CHARSET_UTF8:
+			//printf("charset: utf8\n");
+			char2int = utf8_char2int;
+			int2char = utf8_int2char;
+			break;
+		    default:
+			//printf("charset: none\n");
+			break;
+		}
+		if (char2int)
+		    migemo_setproc_char2int(obj, char2int);
+		if (int2char)
+		    migemo_setproc_int2char(obj, int2char);
+	    }
+	    fclose(fp);
+	}
+    }
+    return load_mtree_dictionary(obj->mtree, dict_file);
+}
+
+/*
+ * migemo interfaces
+ */
 
 /**
  * Migemoオブジェクトに辞書、またはデータファイルを追加読み込みする。
@@ -97,7 +148,7 @@ migemo_load(migemo* obj, int dict_id, const char* dict_file)
 	/* migemo辞書読み込み */
 	mtree_p mtree;
 
-	if ((mtree = load_mtree_dictionary(obj->mtree, dict_file)) == NULL)
+	if ((mtree = load_mtree_dictionary2(obj, dict_file)) == NULL)
 	    return MIGEMO_DICTID_INVALID;
 	obj->mtree = mtree;
 	obj->enable = 1;
@@ -164,6 +215,7 @@ migemo_open(const char* dict)
 	return obj;
     obj->enable = 0;
     obj->mtree = mnode_open(NULL);
+    obj->charset = CHARSET_NONE;
     obj->rx = rxgen_open();
     obj->roma2hira =	romaji_open();
     obj->hira2kata =	romaji_open();
@@ -194,7 +246,7 @@ migemo_open(const char* dict)
 	strcat(kata_dict, "/" DICT_HIRA2KATA);
 	strcat(h2z_dict, "/" DICT_HAN2ZEN);
 
-	mtree = load_mtree_dictionary(obj->mtree, dict);
+	mtree = load_mtree_dictionary2(obj, dict);
 	if (mtree)
 	{
 	    obj->mtree = mtree;
@@ -392,6 +444,8 @@ query_a_word(migemo* object, unsigned char* query)
     static int
 addword_rxgen(migemo* object, unsigned char* word)
 {
+    /* 正規表現生成エンジンに追加された単語を表示する */
+    /*printf("addword_rxgen: %s\n", word);*/
     return rxgen_add(object->rx, word);
 }
 

@@ -84,11 +84,13 @@ default_char2int(const unsigned char* in, unsigned int* out)
 #if defined(RXGEN_ENC_SJISTINY)
     if (*in >= 0x80)
     {
-	*out = (unsigned int)in[0] << 8 | (unsigned int)in[1];
+	if (out)
+	    *out = (unsigned int)in[0] << 8 | (unsigned int)in[1];
 	return 2;
     }
 #endif
-    *out = *in;
+    if (out)
+	*out = *in;
     return 1;
 }
 
@@ -197,6 +199,7 @@ rxgen_add(rxgen* object, const unsigned char* word)
     {
 	unsigned int code;
 	int len = rxgen_call_char2int(object, word, &code);
+	/*printf("rxgen_call_char2int: code=%08x\n", code);*/
 
 	/* I—¹ğŒ */
 	if (!code)

@@ -3,13 +3,13 @@
  * migemo.h -
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 16-Jun-2004.
+ * Last Change: 17-Jun-2004.
  */
 
 #ifndef MIGEMO_H
 #define MIGEMO_H
 
-#define MIGEMO_VERSION "1.1"
+#define MIGEMO_VERSION "1.3"
 
 /* for migemo_load() */
 #define MIGEMO_DICTID_INVALID		0
@@ -51,13 +51,6 @@ void migemo_setproc_int2char(migemo* object, MIGEMO_PROC_INT2CHAR proc);
 
 int migemo_load(migemo* obj, int dict_id, const char* dict_file);
 int migemo_is_enable(migemo* obj);
-
-int migemo_cp932_char2int(const unsigned char* in, unsigned int* out);
-int migemo_cp932_int2char(unsigned int in, unsigned char* out);
-int migemo_eucjp_char2int(const unsigned char* in, unsigned int* out);
-int migemo_eucjp_int2char(unsigned int in, unsigned char* out);
-int migemo_utf8_char2int(const unsigned char* in, unsigned int* out);
-int migemo_utf8_int2char(unsigned int in, unsigned char* out);
 
 #ifdef __cplusplus
 }

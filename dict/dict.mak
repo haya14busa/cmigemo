@@ -2,7 +2,7 @@
 #
 # 辞書ファイルのメンテナンス
 # 
-# Last Change: 21-Dec-2002.
+# Last Change: 17-Jun-2004.
 # Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
 
 # 必須プログラム

@@ -3,7 +3,7 @@
  * romaji.c - ÉçÅ[É}éöïœä∑
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 04-May-2004.
+ * Last Change: 17-Jun-2004.
  */
 
 #include <stdio.h>
@@ -19,7 +19,7 @@
 # define INLINE 
 #endif
 
-#define ROMANODE_VALUE_MAXLEN 7
+#define ROMANODE_VALUE_MAXLEN 16
 #define ROMAJI_KEY_MAXLEN 8
 #define ROMAJI_FIXKEY_N 'n'
 #define ROMAJI_FIXKEY_XN "xn"
