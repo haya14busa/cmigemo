@@ -30,7 +30,8 @@ C/Migemoライブラリ説明書
   れています。
   (ディレクトリ)
     compile/            :各プラットホーム用のメイクファイル置き場
-    compile/vs6         :VS6用プロジェクトファイル
+    compile/vs6         :VS6用プロジェクト
+    compile/vs2003      :VS2003用プロジェクト
     doc/                :ドキュメント置き場
     dict/               :辞書置き場
     tools/              :各種ツール
