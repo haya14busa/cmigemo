@@ -2,7 +2,7 @@
 #
 # Configuration file.
 #
-# Last Change:	19-Jun-2004.
+# Last Change:	08-Dec-2004.
 # Maintainer:	MURAOKA Taro <koron@tka.att.ne.jp>
 
 srcdir = ./src/
@@ -12,7 +12,7 @@ outdir = ./build/
 ##############################################################################
 # Install directories
 #
-prefix		= /usr/local
+prefix		= ${PATH_PREFIX}
 bindir		= $(prefix)/bin
 libdir		= $(prefix)/lib
 incdir		= $(prefix)/include

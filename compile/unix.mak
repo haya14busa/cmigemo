@@ -2,7 +2,7 @@
 #
 # UNIXŒn‹¤’ÊMakefile
 #
-# Last Change:	09-Oct-2004.
+# Last Change:	08-Dec-2004.
 # Base Idea:	AIDA Shinra
 # Maintainer:	MURAOKA Taro <koron@tka.att.ne.jp>
 
@@ -62,6 +62,7 @@ install-dict:
 	  $(INSTALL_DATA) dict/utf-8.d/migemo-dict $(dictdir)/utf-8; \
 	  $(INSTALL_DATA) dict/utf-8.d/han2zen.dat $(dictdir)/utf-8; \
 	  $(INSTALL_DATA) dict/utf-8.d/hira2kata.dat $(dictdir)/utf-8; \
+	  $(INSTALL_DATA) dict/utf-8.d/roma2hira.dat $(dictdir)/utf-8; \
 	  $(INSTALL_DATA) dict/utf-8.d/zen2han.dat $(dictdir)/utf-8; \
 	fi
 
