@@ -204,7 +204,7 @@ C/Migemoライブラリ説明書
 - migemo*;
     Migemoオブジェクト。migemo_open()で作成され、migemo_close()で破棄される。
 
-- int (*MIGEMO_PROC_CHAR2INT)(unsigned char*, unsigned int*);
+- int (*MIGEMO_PROC_CHAR2INT)(const unsigned char*, unsigned int*);
     バイト列(unsigned char*)を文字コード(unsigned int)に変換するプロシージャ
     型。Shift-JISやEUC-JP以外のエンコードの文字列を扱うとき、もしくは特殊文字
     の処理を行いたいときに定義する。戻り値は文字列のうち処理したバイト数で、0
@@ -222,7 +222,7 @@ C/Migemoライブラリ説明書
   C/Migemoライブラリで提供されるAPIを以下で解説する。実際の使用例はアーカイブ
   に含まれるmain.cを参照のこと。
 
-- migemo* migemo_open(char* dict);
+- migemo* migemo_open(const char* dict);
     Migemoオブジェクトを作成する。作成に成功するとオブジェクトが戻り値として返
     り、失敗するとNULLが返る。dictで指定したファイルがmigemo-dict辞書としてオ
     ブジェクト作成時に読み込まれる。辞書と同じディレクトリに:
@@ -237,7 +237,7 @@ C/Migemoライブラリ説明書
 - void migemo_close(migemo* object);
     Migemoオブジェクトを破棄し、使用していたリソースを解放する。
 
-- unsigned char* migemo_query(migemo* object, unsigned char* query);
+- unsigned char* migemo_query(migemo* object, const unsigned char* query);
     queryで与えられた文字列(ローマ字)を日本語検索のための正規表現へ変換する。
     戻り値は変換された結果の文字列(正規表現)で、使用後はmigemo_release()関数へ
     渡すことで解放しなければならない。
@@ -245,7 +245,7 @@ C/Migemoライブラリ説明書
 - void migemo_release(migemo* object, unsigned char* string);
     使い終わったmigemo_query()関数で得られた正規表現を解放する。
 
-- int migemo_load(migemo* obj, int dict_id, char* dict_file);
+- int migemo_load(migemo* obj, int dict_id, const char* dict_file);
     Migemoオブジェクトに辞書、またはデータファイルを追加読み込みする。
     dict_fileは読み込むファイル名を指定する。dict_idは読み込む辞書・データの種
     類を指定するもので以下のうちどれか一つを指定する:
@@ -264,7 +264,7 @@ C/Migemoライブラリ説明書
     migemo_dictを読み込めて内部に変換テーブルが構築できていれば0以外(TRUE)を、
     構築できていないときには0(FALSE)を返す。
 
-- int migemo_set_operator(migemo* object, int index, unsigned char* op);
+- int migemo_set_operator(migemo* object, int index, const unsigned char* op);
     Migemoオブジェクトが生成する正規表現に使用するメタ文字(演算子)を指定する。
     indexでどのメタ文字かを指定し、opで置き換える。indexには以下の値が指定可能
     である:

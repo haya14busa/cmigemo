@@ -2,8 +2,8 @@
 /*
  * romaji.c - ÉçÅ[É}éöïœä∑
  *
- * Written By:  Muraoka Taro <koron@tka.att.ne.jp>
- * Last Change: 29-Dec-2003.
+ * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
+ * Last Change: 04-May-2004.
  */
 
 #include <stdio.h>
@@ -64,7 +64,7 @@ romanode_delete(romanode* node)
 }
 
     static romanode**
-romanode_dig(romanode** ref_node, unsigned char* key)
+romanode_dig(romanode** ref_node, const unsigned char* key)
 {
     if (!ref_node || !key || key[0] == '\0')
 	return NULL;
@@ -98,7 +98,7 @@ romanode_dig(romanode** ref_node, unsigned char* key)
 }
 
     static romanode*
-romanode_query(romanode* node, unsigned char* key, int* skip)
+romanode_query(romanode* node, const unsigned char* key, int* skip)
 {
     int nskip = 0;
 
@@ -173,7 +173,7 @@ struct _romaji
 };
 
     static unsigned char*
-strdup_lower(unsigned char* string)
+strdup_lower(const unsigned char* string)
 {
     unsigned char *out = strdup(string), *tmp;
 
@@ -201,7 +201,8 @@ romaji_close(romaji* object)
 }
 
     int
-romaji_add_table(romaji* object, unsigned char* key, unsigned char* value)
+romaji_add_table(romaji* object, const unsigned char* key,
+	const unsigned char* value)
 {
     int len;
     romanode **ref_node;
@@ -319,7 +320,7 @@ romaji_load_stub(romaji* object, FILE* fp)
 }
 
     int
-romaji_load(romaji* object, unsigned char* filename)
+romaji_load(romaji* object, const unsigned char* filename)
 {
     FILE *fp;
    
@@ -335,14 +336,14 @@ romaji_load(romaji* object, unsigned char* filename)
 }
 
     unsigned char*
-romaji_convert2(romaji* object, unsigned char* string,
+romaji_convert2(romaji* object, const unsigned char* string,
 	unsigned char** ppstop, int ignorecase)
 {
     /* Argument "ppstop" receive conversion stoped position. */
     wordbuf_p buf = NULL;
     unsigned char *lower = NULL;
     unsigned char *answer = NULL;
-    unsigned char *input = string;
+    const unsigned char *input = string;
     int stop = -1;
 
     if (ignorecase)
@@ -424,7 +425,8 @@ romaji_convert2(romaji* object, unsigned char* string,
 }
 
     unsigned char*
-romaji_convert(romaji* object, unsigned char* string, unsigned char** ppstop)
+romaji_convert(romaji* object, const unsigned char* string,
+	unsigned char** ppstop)
 {
     return romaji_convert2(object, string, ppstop, 1);
 }

@@ -2,8 +2,8 @@
 /*
  * rxgen.c - regular expression generator
  *
- * Written By:  Muraoka Taro <koron@tka.att.ne.jp>
- * Last Change: 15-May-2002.
+ * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
+ * Last Change: 04-May-2004.
  */
 
 #include <stdio.h>
@@ -79,7 +79,7 @@ rnode_delete(rnode* node)
  */
 
     static int
-default_char2int(unsigned char* in, unsigned int* out)
+default_char2int(const unsigned char* in, unsigned int* out)
 {
 #if defined(RXGEN_ENC_SJISTINY)
     if (*in >= 0x80)
@@ -155,7 +155,8 @@ rxgen_setproc_int2char(rxgen* object, RXGEN_PROC_INT2CHAR proc)
 }
 
     static int
-rxgen_call_char2int(rxgen* object, unsigned char* pch, unsigned int* code)
+rxgen_call_char2int(rxgen* object, const unsigned char* pch,
+	unsigned int* code)
 {
     int len = object->char2int(pch, code);
     return len ? len : default_char2int(pch, code);
@@ -197,7 +198,7 @@ rxgen_close(rxgen* object)
 }
 
     int
-rxgen_add(rxgen* object, unsigned char* word)
+rxgen_add(rxgen* object, const unsigned char* word)
 {
     rnode **ppnode;
 
@@ -293,7 +294,6 @@ rxgen_generate_stub(rxgen* object, wordbuf_t* buf, rnode* node)
 	    chlen = object->int2char(tmp->code, ch);
 	    ch[chlen] = '\0';
 	    wordbuf_cat(buf, ch);
-	    /*printf("haschild: %s(brother=%d, haschild=%d)\n", ch, brother, haschild);*/
 	    /* 空白・改行飛ばしのパターンを挿入 */
 	    if (object->op_newline[0])
 		wordbuf_cat(buf, object->op_newline);
@@ -377,7 +377,7 @@ rxgen_get_operator(rxgen* object, int index)
 }
 
     int
-rxgen_set_operator(rxgen* object, int index, unsigned char* op)
+rxgen_set_operator(rxgen* object, int index, const unsigned char* op)
 {
     unsigned char* dest;
 

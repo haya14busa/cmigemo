@@ -2,8 +2,8 @@
 /*
  * migemo.c -
  *
- * Written By:  Muraoka Taro <koron@tka.att.ne.jp>
- * Last Change: 29-Dec-2003.
+ * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
+ * Last Change: 04-May-2004.
  */
 
 #include <stdio.h>
@@ -50,7 +50,7 @@ struct _migemo
  */
 
     static mtree_p
-load_mtree_dictionary(mtree_p mtree, char* dict_file)
+load_mtree_dictionary(mtree_p mtree, const char* dict_file)
 {
     FILE *fp;
 
@@ -87,7 +87,7 @@ load_mtree_dictionary(mtree_p mtree, char* dict_file)
  */
     EXPORTS
     int 
-migemo_load(migemo* obj, int dict_id, char* dict_file)
+migemo_load(migemo* obj, int dict_id, const char* dict_file)
 {
     if (!obj && dict_file)
 	return MIGEMO_DICTID_INVALID;
@@ -155,7 +155,7 @@ migemo_load(migemo* obj, int dict_id, char* dict_file)
  */
     EXPORTS
     migemo*
-migemo_open(char* dict)
+migemo_open(const char* dict)
 {
     migemo *obj;
 
@@ -182,7 +182,7 @@ migemo_open(char* dict)
 #endif
 	char dir[_MAX_PATH];
 	char roma_dict[_MAX_PATH], kata_dict[_MAX_PATH], h2z_dict[_MAX_PATH];
-	char *tmp;
+	const char *tmp;
 	mtree_p mtree;
 
 	filename_directory(dir, dict);
@@ -337,14 +337,14 @@ add_dubious_roma(migemo* object, rxgen* rx, unsigned char* query)
  * ”•¶š‚Ì‘å•¶š‚Ån‚Ü‚Á‚½•¶ß‚Í”ñ‘å•¶š‚ğ‹æØ‚è‚Æ‚·‚éB
  */
     static wordlist_p
-parse_query(unsigned char* query)
+parse_query(const unsigned char* query)
 {
-    unsigned char *buf = query;
+    const unsigned char *buf = query;
     wordlist_p querylist = NULL, *pp = &querylist;
 
     while (*buf != '\0')
     {
-	unsigned char *start = buf++;
+	const unsigned char *start = buf++;
 
 	if (isupper(start[0]) && isupper(buf[0]))
 	{
@@ -405,7 +405,7 @@ addword_rxgen(migemo* object, unsigned char* word)
  */
     EXPORTS
     unsigned char*
-migemo_query(migemo* object, unsigned char* query)
+migemo_query(migemo* object, const unsigned char* query)
 {
     unsigned char *retval = NULL;
     wordlist_p querylist = NULL;
@@ -497,7 +497,7 @@ migemo_release(migemo* p, unsigned char* string)
  */
     EXPORTS
     int
-migemo_set_operator(migemo* object, int index, unsigned char* op)
+migemo_set_operator(migemo* object, int index, const unsigned char* op)
 {
     if (object)
     {

@@ -3,7 +3,7 @@
  * migemo.h -
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 28-Oct-2003.
+ * Last Change: 04-May-2004.
  */
 
 #ifndef MIGEMO_H
@@ -27,7 +27,7 @@
 #define MIGEMO_OPINDEX_NEWLINE		5
 
 /* see: rxgen.h */
-typedef int (*MIGEMO_PROC_CHAR2INT)(unsigned char*, unsigned int*);
+typedef int (*MIGEMO_PROC_CHAR2INT)(const unsigned char*, unsigned int*);
 typedef int (*MIGEMO_PROC_INT2CHAR)(unsigned int, unsigned char*);
 
 /**
@@ -39,17 +39,17 @@ typedef struct _migemo migemo;
 extern "C" {
 #endif
 
-migemo* migemo_open(char* dict);
+migemo* migemo_open(const char* dict);
 void migemo_close(migemo* object);
-unsigned char* migemo_query(migemo* object, unsigned char* query);
+unsigned char* migemo_query(migemo* object, const unsigned char* query);
 void migemo_release(migemo* object, unsigned char* string);
 
-int migemo_set_operator(migemo* object, int index, unsigned char* op);
+int migemo_set_operator(migemo* object, int index, const unsigned char* op);
 const unsigned char* migemo_get_operator(migemo* object, int index);
 void migemo_setproc_char2int(migemo* object, MIGEMO_PROC_CHAR2INT proc);
 void migemo_setproc_int2char(migemo* object, MIGEMO_PROC_INT2CHAR proc);
 
-int migemo_load(migemo* obj, int dict_id, char* dict_file);
+int migemo_load(migemo* obj, int dict_id, const char* dict_file);
 int migemo_is_enable(migemo* obj);
 
 #ifdef __cplusplus
