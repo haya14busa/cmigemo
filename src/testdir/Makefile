@@ -11,9 +11,10 @@ ROMAJI_SRC = romaji_main.c ../romaji.c ../wordbuf.c ../charset.c
 QSPEED_SRC = profile_speed.c $(MIGEMO_SRC)
 
 CCFLAGS = -I. -I.. -DDICTDIR=\"$(DICTDIR)\" -D_DEBUG
+CCFLAGS_PROF = -pg
 
 qspeed: $(QSPEED_SRC)
-	$(CC) $(CCFLAGS) -o $@ -pg $(QSPEED_SRC)
+	$(CC) $(CCFLAGS) -o $@ $(CCFLAGS_PROF) $(QSPEED_SRC)
 
 romaji: $(ROMAJI_SRC)
 	$(CC) $(CCFLAGS) -o $@ $(ROMAJI_SRC)
