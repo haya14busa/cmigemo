@@ -3,7 +3,7 @@
  * romaji.c - ƒ[ƒ}š•ÏŠ·
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 19-Jun-2004.
+ * Last Change: 20-Jun-2004.
  */
 
 #include <stdio.h>
@@ -359,7 +359,7 @@ romaji_load(romaji* object, const unsigned char* filename)
     charset = charset_detect_file(filename);
     charset_getproc(charset, (CHARSET_PROC_CHAR2INT*)&object->char2int, NULL);
 #endif
-    if (fp = fopen(filename, "rt"))
+    if ((fp = fopen(filename, "rt")) != NULL)
     {
 	int result = result = romaji_load_stub(object, fp);
 	fclose(fp);
@@ -405,7 +405,7 @@ romaji_convert2(romaji* object, const unsigned char* string,
 	    }
 
 	    node = romanode_query(object->node, &input[i], &skip, object->char2int);
-	    VERBOSE(object, 1, printf("key=%s value=%s skip=%d\n", &input[i], node ? node->value : "null" , skip);)
+	    VERBOSE(object, 1, printf("key=%s value=%s skip=%d\n", &input[i], node ? (char*)node->value : "null" , skip);)
 	    if (!skip)
 	    {
 		if (string[i])

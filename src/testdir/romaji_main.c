@@ -2,8 +2,8 @@
 /*
  * romaji_main.c -
  *
- * Written By:  Muraoka Taro <koron@tka.att.ne.jp>
- * Last Change: 19-Jun-2004.
+ * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
+ * Last Change: 20-Jun-2004.
  */
 /*
  * gcc -o romaji romaji_main.c ../romaji.c ../wordbuf.c
@@ -14,7 +14,7 @@
 #include "romaji.h"
 
 #ifndef DICTDIR
-# define "../dict"
+# define DICTDIR "../dict"
 #endif
 #ifndef DICT_ROMA2HIRA
 # define DICT_ROMA2HIRA	(DICTDIR "/roma2hira.dat")

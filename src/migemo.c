@@ -3,7 +3,7 @@
  * migemo.c -
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 19-Jun-2004.
+ * Last Change: 20-Jun-2004.
  */
 
 #include <stdio.h>
@@ -396,7 +396,6 @@ parse_query(migemo* object, const unsigned char* query)
 {
     const unsigned char *curr = query;
     const unsigned char *start = NULL;
-    const unsigned char *end = NULL;
     wordlist_p querylist = NULL, *pp = &querylist;
 
     while (1)
