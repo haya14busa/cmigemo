@@ -2,7 +2,7 @@ C/Migemoライブラリ説明書
                                                             Since: 15-Aug-2001
                                                                 Version: 1.2.0
                                                   Author: MURAOKA Taro (KoRoN)
-                                                     Last Change: 29-Dec-2003.
+                                                     Last Change: 23-Feb-2004.
 
 説明
   C/MigemoはMigemo(Ruby/Migemo)をC言語で実装したものです。C/Migemoライブラリを
@@ -326,7 +326,10 @@ C/Migemoライブラリ説明書
     }
 
 更新箇所 {{{1
-  ● (1.2 正式版)
+  ● (1.3 開発版)
+    migemo.vimをcmigemo.exe対応の改良版に差し替え
+    ヘルプメッセージ内の余分な空白を削除
+  ● 29-Dec-2003 (1.2 正式版)
     半角大文字を全角大文字に変換できないバグを修正
     リリース用にドキュメントを修正
     configureスクリプトを導入
