@@ -3,8 +3,10 @@
  * charset.c -
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 17-Jun-2004.
+ * Last Change: 19-Jun-2004.
  */
+
+#define BUFLEN_DETECT 4096
 
 #include <stdio.h>
 #include "charset.h"
@@ -185,7 +187,7 @@ utf8_int2char(unsigned int in, unsigned char* out)
 }
 
     int
-detect_charset(const unsigned char* buf, int len)
+charset_detect_buf(const unsigned char* buf, int len)
 {
     int sjis = 0, smode = 0;
     int euc = 0, emode = 0, eflag = 0;
@@ -264,4 +266,49 @@ detect_charset(const unsigned char* buf, int len)
 	return CHARSET_CP932;
     else
 	return CHARSET_NONE;
+}
+
+    void
+charset_getproc(int charset, CHARSET_PROC_CHAR2INT* char2int,
+	CHARSET_PROC_INT2CHAR* int2char)
+{
+    CHARSET_PROC_CHAR2INT c2i = NULL;
+    CHARSET_PROC_INT2CHAR i2c = NULL;
+    switch (charset)
+    {
+	case CHARSET_CP932:
+	    c2i = cp932_char2int;
+	    i2c = cp932_int2char;
+	    break;
+	case CHARSET_EUCJP:
+	    c2i = eucjp_char2int;
+	    i2c = eucjp_int2char;
+	    break;
+	case CHARSET_UTF8:
+	    c2i = utf8_char2int;
+	    i2c = utf8_int2char;
+	    break;
+	default:
+	    break;
+    }
+    if (char2int)
+	*char2int = c2i;
+    if (int2char)
+	*int2char = i2c;
+}
+
+    int
+charset_detect_file(const char* path)
+{
+    int charset = CHARSET_NONE;
+    FILE* fp;
+    if ((fp = fopen(path, "rt")) != NULL)
+    {
+	unsigned char buf[BUFLEN_DETECT];
+	int len = fread(buf, sizeof(buf[0]), sizeof(buf), fp);
+	fclose(fp);
+	if (len > 0)
+	    charset = charset_detect_buf(buf, len);
+    }
+    return charset;
 }

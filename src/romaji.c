@@ -3,7 +3,7 @@
  * romaji.c - ローマ字変換
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 17-Jun-2004.
+ * Last Change: 19-Jun-2004.
  */
 
 #include <stdio.h>
@@ -11,6 +11,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "wordbuf.h"
+#include "charset.h"
 #include "romaji.h"
 
 #if defined(_MSC_VER) || defined(__GNUC__)
@@ -19,8 +20,12 @@
 # define INLINE 
 #endif
 
-#define ROMANODE_VALUE_MAXLEN 16
-#define ROMAJI_KEY_MAXLEN 8
+#ifdef _DEBUG
+# define VERBOSE(o,l,b)	if ((o)->verbose >= (l)) { b }
+#else
+# define VERBOSE(o,l,b)
+#endif
+
 #define ROMAJI_FIXKEY_N 'n'
 #define ROMAJI_FIXKEY_XN "xn"
 #define ROMAJI_FIXKEY_XTU "xtu"
@@ -34,7 +39,7 @@ typedef struct _romanode romanode;
 struct _romanode
 {
     unsigned char key;
-    unsigned char value[ROMANODE_VALUE_MAXLEN];
+    unsigned char* value;
     romanode* next;
     romanode* child;
 };
@@ -57,6 +62,7 @@ romanode_delete(romanode* node)
 	romanode* child = node->child;
 	if (node->next)
 	    romanode_delete(node->next);
+	free(node->value);
 	free(node);
 	node = child;
 	++n_romanode_delete;
@@ -80,7 +86,7 @@ romanode_dig(romanode** ref_node, const unsigned char* key)
 
 	if ((*ref_node)->key == *key)
 	{
-	    (*ref_node)->value[0] = '\0';
+	    (*ref_node)->value = NULL;
 	    if (!*++key)
 		break;
 	    ref_node = &(*ref_node)->child;
@@ -97,10 +103,19 @@ romanode_dig(romanode** ref_node, const unsigned char* key)
     return ref_node;
 }
 
+/**
+ * キーに対応したromanodeを検索して返す。
+ * @return romanodeが見つからなかった場合NULL
+ * @param node ルートノード
+ * @param key 検索キー
+ * @param skip 進めるべきkeyのバイト数を受け取るポインタ
+ */
     static romanode*
-romanode_query(romanode* node, const unsigned char* key, int* skip)
+romanode_query(romanode* node, const unsigned char* key, int* skip,
+	ROMAJI_PROC_CHAR2INT char2int)
 {
     int nskip = 0;
+    const unsigned char* key_start = key;
 
     if (node && key && *key)
     {
@@ -111,7 +126,7 @@ romanode_query(romanode* node, const unsigned char* key, int* skip)
 	    else
 	    {
 		++nskip;
-		if (node->value[0])
+		if (node->value)
 		    break;
 		if (!*++key)
 		{
@@ -120,10 +135,12 @@ romanode_query(romanode* node, const unsigned char* key, int* skip)
 		}
 		node = node->child;
 	    }
-
+	    /* 次に走査するノードが空の場合、キーを進めてNULLを返す */
 	    if (!node)
 	    {
-		nskip = 1;
+		/* 1バイトではなく1文字進める */
+		if (!char2int || (nskip = (*char2int)(key_start, NULL) < 1))
+		    nskip = 1;
 		break;
 	    }
 	}
@@ -144,7 +161,7 @@ romanode_print_stub(romanode* node, unsigned char* p)
 	p = &buf[0];
     p[0] = node->key;
     p[1] = '\0';
-    if (node->value[0])
+    if (node->value)
 	printf("%s=%s\n", buf, node->value);
     if (node->child)
 	romanode_print_stub(node->child, p + 1);
@@ -167,9 +184,11 @@ romanode_print(romanode* node)
 
 struct _romaji
 {
+    int verbose;
     romanode* node;
-    unsigned char fixvalue_xn[ROMANODE_VALUE_MAXLEN];
-    unsigned char fixvalue_xtu[ROMANODE_VALUE_MAXLEN];
+    unsigned char* fixvalue_xn;
+    unsigned char* fixvalue_xtu;
+    ROMAJI_PROC_CHAR2INT char2int;
 };
 
     static unsigned char*
@@ -196,6 +215,8 @@ romaji_close(romaji* object)
     {
 	if (object->node)
 	    romanode_delete(object->node);
+	free(object->fixvalue_xn);
+	free(object->fixvalue_xtu);
 	free(object);
     }
 }
@@ -204,37 +225,36 @@ romaji_close(romaji* object)
 romaji_add_table(romaji* object, const unsigned char* key,
 	const unsigned char* value)
 {
-    int len;
+    int value_length;
     romanode **ref_node;
 
     if (!object || !key || !value)
 	return 1; /* Unexpected error */
 
-    len = strlen(value);
-    if (len == 0 || len >= ROMANODE_VALUE_MAXLEN)
-	return 2; /* Too short/long value string */
-
-    len = strlen(key);
-    if (len == 0 || len >= ROMAJI_KEY_MAXLEN)
-	return 3; /* Too short/long key string */
+    value_length = strlen(value);
+    if (value_length == 0)
+	return 2; /* Too short value string */
 
     if (!(ref_node = romanode_dig(&object->node, key)))
     {
 	return 4; /* Memory exhausted */
     }
-    /*printf("romaji_add_table(\"%s\", \"%s\")\n", key, value);*/
-    strcpy((*ref_node)->value, value);
+    VERBOSE(object, 10,
+	    printf("romaji_add_table(\"%s\", \"%s\")\n", key, value););
+    (*ref_node)->value = strdup(value);
 
     /* 「ん」と「っ」は保存しておく */
-    if (!strcmp(key, ROMAJI_FIXKEY_XN))
+    if (object->fixvalue_xn == NULL && value_length > 0
+	    && !strcmp(key, ROMAJI_FIXKEY_XN))
     {
 	/*fprintf(stderr, "XN: key=%s, value=%s\n", key, value);*/
-	strcpy(object->fixvalue_xn, value);
+	object->fixvalue_xn = strdup(value);
     }
-    if (!strcmp(key, ROMAJI_FIXKEY_XTU))
+    if (object->fixvalue_xtu == NULL && value_length > 0
+	    && !strcmp(key, ROMAJI_FIXKEY_XTU))
     {
 	/*fprintf(stderr, "XTU: key=%s, value=%s\n", key, value);*/
-	strcpy(object->fixvalue_xtu, value);
+	object->fixvalue_xtu = strdup(value);
     }
 
     return 0;
@@ -265,8 +285,17 @@ romaji_load_stub(romaji* object, FILE* fp)
 	    case 0:
 		/* key待ちモード */
 		if (ch == '#')
-		    mode = 1; /* 行末まで読み飛ばしモード へ移行 */
-		else if (ch != EOF && !isspace(ch))
+		{
+		    /* 1文字先読みして空白ならばkeyとして扱う */
+		    ch = fgetc(fp);
+		    if (ch != '#')
+		    {
+			ungetc(ch, fp);
+			mode = 1; /* 行末まで読み飛ばしモード へ移行 */
+			break;
+		    }
+		}
+		if (ch != EOF && !isspace(ch))
 		{
 		    wordbuf_reset(buf_key);
 		    wordbuf_add(buf_key, (unsigned char)ch);
@@ -323,11 +352,16 @@ romaji_load_stub(romaji* object, FILE* fp)
 romaji_load(romaji* object, const unsigned char* filename)
 {
     FILE *fp;
-   
-    if (object && filename && (fp = fopen(filename, "rt")))
+    int charset;
+    if (!object || !filename)
+	return -1;
+#if 1
+    charset = charset_detect_file(filename);
+    charset_getproc(charset, (CHARSET_PROC_CHAR2INT*)&object->char2int, NULL);
+#endif
+    if (fp = fopen(filename, "rt"))
     {
 	int result = result = romaji_load_stub(object, fp);
-
 	fclose(fp);
 	return result;
     }
@@ -362,7 +396,7 @@ romaji_convert2(romaji* object, const unsigned char* string,
 	    int skip;
 
 	    /* 「っ」の判定 */
-	    if (object->fixvalue_xtu[0] && input[i] == input[i + 1]
+	    if (object->fixvalue_xtu && input[i] == input[i + 1]
 		    && !strchr(ROMAJI_FIXKEY_NONXTU, input[i]))
 	    {
 		++i;
@@ -370,22 +404,10 @@ romaji_convert2(romaji* object, const unsigned char* string,
 		continue;
 	    }
 
-	    node = romanode_query(object->node, &input[i], &skip);
+	    node = romanode_query(object->node, &input[i], &skip, object->char2int);
+	    VERBOSE(object, 1, printf("key=%s value=%s skip=%d\n", &input[i], node ? node->value : "null" , skip);)
 	    if (!skip)
 	    {
-#if 0
-		/*
-		 * queryの最後がnの場合強制的に「ん」に変換したいところだ
-		 * が、その場合migemoの方で[なにぬねのん]を検索できない不具
-		 * 合となる。今回は泣く。
-		 */
-		/* 「n(子音)」を「ん(子音)」に変換 */
-		if (input[i] == ROMAJI_FIXKEY_N && object->fixvalue_xn[0])
-		{
-		    ++i;
-		    wordbuf_cat(buf, object->fixvalue_xn);
-		}
-#endif
 		if (string[i])
 		{
 		    stop = WORDBUF_LEN(buf);
@@ -397,7 +419,7 @@ romaji_convert2(romaji* object, const unsigned char* string,
 	    {
 		/* 「n(子音)」を「ん(子音)」に変換 */
 		if (skip == 1 && input[i] == ROMAJI_FIXKEY_N
-			&& object->fixvalue_xn[0])
+			&& object->fixvalue_xn)
 		{
 		    ++i;
 		    wordbuf_cat(buf, object->fixvalue_xn);
@@ -435,4 +457,18 @@ romaji_convert(romaji* object, const unsigned char* string,
 romaji_release(romaji* object, unsigned char* string)
 {
     free(string);
+}
+
+    void
+romaji_setproc_char2int(romaji* object, ROMAJI_PROC_CHAR2INT proc)
+{
+    if (object)
+	object->char2int = proc;
+}
+
+    void
+romaji_set_verbose(romaji* object, int level)
+{
+    if (object)
+	object->verbose = level;
 }

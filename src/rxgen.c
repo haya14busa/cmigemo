@@ -3,7 +3,7 @@
  * rxgen.c - regular expression generator
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 17-Jun-2004.
+ * Last Change: 19-Jun-2004.
  */
 
 #include <stdio.h>
@@ -81,14 +81,6 @@ rnode_delete(rnode* node)
     static int
 default_char2int(const unsigned char* in, unsigned int* out)
 {
-#if defined(RXGEN_ENC_SJISTINY)
-    if (*in >= 0x80)
-    {
-	if (out)
-	    *out = (unsigned int)in[0] << 8 | (unsigned int)in[1];
-	return 2;
-    }
-#endif
     if (out)
 	*out = *in;
     return 1;
@@ -99,17 +91,6 @@ default_int2char(unsigned int in, unsigned char* out)
 {
     int len = 0;
     /* outは最低でも16バイトはある、という仮定を置く */
-#if defined(RXGEN_ENC_SJISTINY)
-    if (in >= 0x100)
-    {
-	if (out)
-	{
-	    out[0] = (unsigned char)((in >> 8) & 0xFF);
-	    out[1] = (unsigned char)(in & 0xFF);
-	}
-	return 2;
-    }
-#endif
     switch (in)
     {
 	case '\\':
@@ -247,7 +228,10 @@ rxgen_generate_stub(rxgen* object, wordbuf_t* buf, rnode* node)
 	    ++haschild;
     }
     nochild = brother - haschild;
-
+#if 0 /* For debug */
+    printf("node=%p code=%04X\n  nochild=%d haschild=%d brother=%d\n",
+	    node, node->code, nochild, haschild, brother);
+#endif
     /* 必要ならば()によるグルーピング */
     if (brother > 1 && haschild > 0)
 	wordbuf_cat(buf, object->op_nest_in);
@@ -281,7 +265,8 @@ rxgen_generate_stub(rxgen* object, wordbuf_t* buf, rnode* node)
 	    ;
 	while (1)
 	{
-	    chlen = object->int2char(tmp->code, ch);
+	    chlen = rxgen_call_int2char(object, tmp->code, ch);
+	    /*printf("code=%04X len=%d\n", tmp->code, chlen);*/
 	    ch[chlen] = '\0';
 	    wordbuf_cat(buf, ch);
 	    /* 空白・改行飛ばしのパターンを挿入 */

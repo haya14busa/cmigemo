@@ -2,7 +2,7 @@
 #
 # 構成ファイルと依存関係
 #
-# Last Change:	17-Jun-2004.
+# Last Change:	19-Jun-2004.
 # Written By:	MURAOKA Taro <koron@tka.att.ne.jp>
 
 ##############################################################################
@@ -55,6 +55,7 @@ $(objdir)mnode.$(O): $(srcdir)mnode.c \
 	$(srcdir)mnode.h
 
 $(objdir)romaji.$(O): $(srcdir)romaji.c \
+	$(srcdir)charset.h \
 	$(srcdir)romaji.h
 
 $(objdir)rxgen.$(O): $(srcdir)rxgen.c \

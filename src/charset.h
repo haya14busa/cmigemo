@@ -3,7 +3,7 @@
  * charset.h -
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 17-Jun-2004.
+ * Last Change: 18-Jun-2004.
  */
 
 #ifndef CHARSET_H
@@ -16,6 +16,11 @@ enum {
     CHARSET_UTF8 = 3,
 };
 
+typedef int (*charset_proc_char2int)(const unsigned char*, unsigned int*);
+typedef int (*charset_proc_int2char)(unsigned int, unsigned char*);
+#define CHARSET_PROC_CHAR2INT charset_proc_char2int
+#define CHARSET_PROC_INT2CHAR charset_proc_int2char
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,7 +32,10 @@ int eucjp_int2char(unsigned int in, unsigned char* out);
 int utf8_char2int(const unsigned char* in, unsigned int* out);
 int utf8_int2char(unsigned int in, unsigned char* out);
 
-int detect_charset(const unsigned char* buf, int len);
+int charset_detect_file(const char* path);
+int charset_detect_buf(const unsigned char* buf, int len);
+void charset_getproc(int charset, CHARSET_PROC_CHAR2INT* char2int,
+	CHARSET_PROC_INT2CHAR* int2char);
 
 #ifdef __cplusplus
 }

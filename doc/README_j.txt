@@ -2,7 +2,7 @@ C/Migemoライブラリ説明書
                                                             Since: 15-Aug-2001
                                                                 Version: 1.2.0
                                                   Author: MURAOKA Taro (KoRoN)
-                                                     Last Change: 17-Jun-2004.
+                                                     Last Change: 19-Jun-2004.
 
 説明
   C/MigemoはMigemo(Ruby/Migemo)をC言語で実装したものです。C/Migemoライブラリを
@@ -185,6 +185,7 @@ C/Migemoライブラリ説明書
     2. ローマ字を平仮名に変換するためのファイル(dict/roma2hira.dat)や、
     3. 平仮名を片仮名に変換するためのファイル(dict/hira2kata.dat)や、
     4. 半角文字を全角文字に変換するためのファイル(dict/han2zen.dat)
+    5. 全角文字を半角文字に変換するためのファイル(dict/zen2han.dat)
   を使用しています。これらの全てのファイルは単にデータテーブルとして機能してい
   るだけでなく、システムのエンコード(漢字コード)の違いを吸収する役割も担ってい
   ます。つまり先に挙げた4ファイルをWindowsで使う場合にはcp932に、UNIXやLinuxで
@@ -229,6 +230,7 @@ C/Migemoライブラリ説明書
       1. roma2hira.dat  (ローマ字→平仮名変換表)
       2. hira2kata.dat  (平仮名→カタカナ変換表)
       3. han2zen.dat    (半角→全角変換表)
+      3. zen2han.dat    (全角→半角変換表)
     という名前のファイルが存在すれば、存在したものだけが読み込まれる。dictに
     NULLを指定した場合には、辞書を含めていかなるファイルも読み込まれない。ファ
     イルはオブジェクト作成後にもmigemo_load()関数を使用することで追加読み込み
@@ -254,6 +256,7 @@ C/Migemoライブラリ説明書
       MIGEMO_DICTID_ROMA2HIRA   ローマ字→平仮名変換表
       MIGEMO_DICTID_HIRA2KATA   平仮名→カタカナ変換表
       MIGEMO_DICTID_HAN2ZEN     半角→全角変換表
+      MIGEMO_DICTID_ZEN2HAN     全角→半角変換表
 
     戻り値は実際に読み込んだ種類を示し、上記の他に読み込みに失敗したことを示す
     次の価が返ることがある。
@@ -327,6 +330,9 @@ C/Migemoライブラリ説明書
 
 更新箇所 {{{1
   ● (1.3 開発版)
+    全角→半角変換を追加
+    全角→半角辞書を追加
+    ローマ字変換でマルチバイト文字を考慮(Vim掲示板:1281)
     CP932/EUCJP/UTF8のエンコード自動判別機能を追加
     migemo.vimをcmigemo.exe対応の改良版に差し替え
     ヘルプメッセージ内の余分な空白を削除

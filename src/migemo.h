@@ -3,7 +3,7 @@
  * migemo.h -
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 17-Jun-2004.
+ * Last Change: 19-Jun-2004.
  */
 
 #ifndef MIGEMO_H
@@ -17,6 +17,7 @@
 #define MIGEMO_DICTID_ROMA2HIRA		2
 #define MIGEMO_DICTID_HIRA2KATA		3
 #define MIGEMO_DICTID_HAN2ZEN		4
+#define MIGEMO_DICTID_ZEN2HAN		5
 
 /* for migemo_set_operator()/migemo_get_operator().  see: rxgen.h */
 #define MIGEMO_OPINDEX_OR		0
