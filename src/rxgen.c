@@ -3,7 +3,7 @@
  * rxgen.c - regular expression generator
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 04-May-2004.
+ * Last Change: 17-Jun-2004.
  */
 
 #include <stdio.h>
@@ -87,20 +87,15 @@ default_char2int(const unsigned char* in, unsigned int* out)
 	*out = (unsigned int)in[0] << 8 | (unsigned int)in[1];
 	return 2;
     }
-    else
-    {
-	*out = *in;
-	return 1;
-    }
-#else
+#endif
     *out = *in;
     return 1;
-#endif
 }
 
     static int
 default_int2char(unsigned int in, unsigned char* out)
 {
+    int len = 0;
     /* outは最低でも16バイトはある、という仮定を置く */
 #if defined(RXGEN_ENC_SJISTINY)
     if (in >= 0x100)
@@ -112,32 +107,24 @@ default_int2char(unsigned int in, unsigned char* out)
 	}
 	return 2;
     }
-    else
+#endif
+    switch (in)
     {
-	int len = 0;
-	switch (in)
-	{
-	    case '\\':
-	    case '.': case '*': case '^': case '$': case '/':
+	case '\\':
+	case '.': case '*': case '^': case '$': case '/':
 #ifdef RXGEN_OP_VIM
-	    case '[': case ']': case '~':
+	case '[': case ']': case '~':
 #endif
-		if (out)
-		    out[len] = '\\';
-		++len;
-	    default:
-		if (out)
-		    out[len] = (unsigned char)(in & 0xFF);
-		++len;
-		break;
-	}
-	return len;
+	    if (out)
+		out[len] = '\\';
+	    ++len;
+	default:
+	    if (out)
+		out[len] = (unsigned char)(in & 0xFF);
+	    ++len;
+	    break;
     }
-#else
-    if (out)
-	out[0] = (unsigned char)(in & 0xFF);
-    return 1;
-#endif
+    return len;
 }
 
     void
