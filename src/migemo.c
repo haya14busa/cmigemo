@@ -201,7 +201,7 @@ migemo_open(const char* dict)
     migemo *obj;
 
     /* migemoオブジェクトと各メンバを構築 */
-    if (!(obj = (migemo*)malloc(sizeof(migemo))))
+    if (!(obj = (migemo*)calloc(1, sizeof(migemo))))
 	return obj;
     obj->enable = 0;
     obj->mtree = mnode_open(NULL);
