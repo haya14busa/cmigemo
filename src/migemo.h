@@ -3,11 +3,17 @@
  * migemo.h -
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 19-Jun-2004.
+ * Last Change: 21-Jun-2004.
  */
 
 #ifndef MIGEMO_H
 #define MIGEMO_H
+
+#if defined(_WIN32)
+# define MIGEMO_CALLTYPE __stdcall
+#else
+# define MIGEMO_CALLTYPE
+#endif
 
 #define MIGEMO_VERSION "1.3"
 
@@ -40,18 +46,25 @@ typedef struct _migemo migemo;
 extern "C" {
 #endif
 
-migemo* migemo_open(const char* dict);
-void migemo_close(migemo* object);
-unsigned char* migemo_query(migemo* object, const unsigned char* query);
-void migemo_release(migemo* object, unsigned char* string);
+migemo* MIGEMO_CALLTYPE	migemo_open(const char* dict);
+void MIGEMO_CALLTYPE	migemo_close(migemo* object);
+unsigned char* MIGEMO_CALLTYPE migemo_query(migemo* object,
+	const unsigned char* query);
+void MIGEMO_CALLTYPE	migemo_release(migemo* object,
+	unsigned char* string);
 
-int migemo_set_operator(migemo* object, int index, const unsigned char* op);
-const unsigned char* migemo_get_operator(migemo* object, int index);
-void migemo_setproc_char2int(migemo* object, MIGEMO_PROC_CHAR2INT proc);
-void migemo_setproc_int2char(migemo* object, MIGEMO_PROC_INT2CHAR proc);
+int MIGEMO_CALLTYPE	migemo_set_operator(migemo* object, int index,
+	const unsigned char* op);
+const unsigned char* MIGEMO_CALLTYPE migemo_get_operator(migemo* object,
+	int index);
+void MIGEMO_CALLTYPE	migemo_setproc_char2int(migemo* object,
+	MIGEMO_PROC_CHAR2INT proc);
+void MIGEMO_CALLTYPE	migemo_setproc_int2char(migemo* object,
+	MIGEMO_PROC_INT2CHAR proc);
 
-int migemo_load(migemo* obj, int dict_id, const char* dict_file);
-int migemo_is_enable(migemo* obj);
+int MIGEMO_CALLTYPE	migemo_load(migemo* obj, int dict_id,
+	const char* dict_file);
+int MIGEMO_CALLTYPE	migemo_is_enable(migemo* obj);
 
 #ifdef __cplusplus
 }

@@ -3,7 +3,7 @@
  * migemo.c -
  *
  * Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
- * Last Change: 20-Jun-2004.
+ * Last Change: 21-Jun-2004.
  */
 
 #include <stdio.h>
@@ -122,8 +122,7 @@ dircat(char* buf, const char* dir, const char* file)
  * @param dict_id 辞書ファイルの種類
  * @param dict_file 辞書ファイルのパス
  */
-    EXPORTS
-    int 
+    EXPORTS int MIGEMO_CALLTYPE
 migemo_load(migemo* obj, int dict_id, const char* dict_file)
 {
     if (!obj && dict_file)
@@ -194,8 +193,7 @@ migemo_load(migemo* obj, int dict_id, const char* dict_file)
  * @param dict migemo-dict辞書のパス。NULLの時は辞書を読み込まない。
  * @returns 作成されたMigemoオブジェクト
  */
-    EXPORTS
-    migemo*
+    EXPORTS migemo* MIGEMO_CALLTYPE
 migemo_open(const char* dict)
 {
     migemo *obj;
@@ -257,8 +255,7 @@ migemo_open(const char* dict)
  * Migemoオブジェクトを破棄し、使用していたリソースを解放する。
  * @param obj 破棄するMigemoオブジェクト
  */
-    EXPORTS
-    void
+    EXPORTS void MIGEMO_CALLTYPE
 migemo_close(migemo* obj)
 {
     if (obj)
@@ -480,8 +477,7 @@ addword_rxgen(migemo* object, unsigned char* word)
  * @param query 問い合わせ文字列
  * @returns 正規表現文字列。#migemo_release() で解放する必要有り。
  */
-    EXPORTS
-    unsigned char*
+    EXPORTS unsigned char* MIGEMO_CALLTYPE
 migemo_query(migemo* object, const unsigned char* query)
 {
     unsigned char *retval = NULL;
@@ -534,8 +530,7 @@ MIGEMO_QUERY_END:
  * @param p Migemoオブジェクト
  * @param string 正規表現文字列
  */
-    EXPORTS
-    void
+    EXPORTS void MIGEMO_CALLTYPE
 migemo_release(migemo* p, unsigned char* string)
 {
     free(string);
@@ -573,8 +568,7 @@ migemo_release(migemo* p, unsigned char* string)
  * @param op メタ文字文字列
  * @returns 成功時0以外、失敗時0。
  */
-    EXPORTS
-    int
+    EXPORTS int MIGEMO_CALLTYPE
 migemo_set_operator(migemo* object, int index, const unsigned char* op)
 {
     if (object)
@@ -595,8 +589,7 @@ migemo_set_operator(migemo* object, int index, const unsigned char* op)
  * @param index メタ文字識別子
  * @returns 現在のメタ文字文字列
  */
-    EXPORTS
-    const unsigned char*
+    EXPORTS const unsigned char* MIGEMO_CALLTYPE
 migemo_get_operator(migemo* object, int index)
 {
     return object ? rxgen_get_operator(object->rx, index) : NULL;
@@ -608,8 +601,7 @@ migemo_get_operator(migemo* object, int index)
  * @param object Migemoオブジェクト
  * @param proc コード変換用プロシージャ
  */
-    EXPORTS
-    void
+    EXPORTS void MIGEMO_CALLTYPE
 migemo_setproc_char2int(migemo* object, MIGEMO_PROC_CHAR2INT proc)
 {
     if (object)
@@ -622,8 +614,7 @@ migemo_setproc_char2int(migemo* object, MIGEMO_PROC_CHAR2INT proc)
  * @param object Migemoオブジェクト
  * @param proc コード変換用プロシージャ
  */
-    EXPORTS
-    void
+    EXPORTS void MIGEMO_CALLTYPE
 migemo_setproc_int2char(migemo* object, MIGEMO_PROC_INT2CHAR proc)
 {
     if (object)
@@ -637,8 +628,7 @@ migemo_setproc_int2char(migemo* object, MIGEMO_PROC_INT2CHAR proc)
  * @param obj Migemoオブジェクト
  * @returns 成功時0以外、失敗時0。
  */
-    EXPORTS
-    int
+    EXPORTS int MIGEMO_CALLTYPE
 migemo_is_enable(migemo* obj)
 {
     return obj ? obj->enable : 0;
@@ -648,8 +638,7 @@ migemo_is_enable(migemo* obj)
 /*
  * 主にデバッグ用の隠し関数
  */
-    EXPORTS
-    void
+    EXPORTS void MIGEMO_CALLTYPE
 migemo_print(migemo* object)
 {
     if (object)
