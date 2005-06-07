@@ -2,7 +2,7 @@ C/Migemoライブラリ説明書
                                                             Since: 15-Aug-2001
                                                                 Version: 1.2.0
                                                   Author: MURAOKA Taro (KoRoN)
-                                                     Last Change: 21-Jan-2005.
+                                                     Last Change: 17-Apr-2005.
 
 説明
   C/MigemoはMigemo(Ruby/Migemo)をC言語で実装したものです。C/Migemoライブラリを
@@ -311,7 +311,7 @@ C/Migemoライブラリ説明書
   C/Migemoを利用したコーディング例を示す。以下のサンプルは一切のエラー処理を行
   なっていないので、実際の利用時には注意が必要。
     #include <stdio.h>
-    #inlcude "migemo.h"
+    #include "migemo.h"
     int main(int argc, char** argv)
     {
         migemo *m;
