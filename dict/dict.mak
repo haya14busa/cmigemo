@@ -2,7 +2,6 @@
 #
 # 辞書ファイルのメンテナンス
 # 
-# Last Change: 19-Jun-2004.
 # Written By:  MURAOKA Taro <koron@tka.att.ne.jp>
 
 DICT 		= migemo-dict
@@ -73,7 +72,7 @@ $(UTF8_DIR)/roma2hira.dat: roma2hira.dat
 ##############################################################################
 # for Microsoft Visual C
 #
-msvc:		cp932
+msvc:		cp932 utf-8
 
 ##############################################################################
 # for Borland C 5
