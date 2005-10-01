@@ -3,7 +3,7 @@
 #
 # configure - Easy configuration script
 #
-# Last Change: 08-Dec-2004.
+# Last Change: 01-Oct-2005.
 # Author & Maintainer: MURAOKA Taro <koron@tka.att.ne.jp>
 
 config_out=config.mk
@@ -22,7 +22,7 @@ PATH_PREFIX=/usr/local
 # Check arguments
 for i in $*
 do
-  arg_value=`echo "$i" | sed 's/[-_a-aA-Z0-9]*=//'`
+  arg_value=`echo "$i" | sed 's/[-_a-zA-Z0-9]*=//'`
   case $i in
     --prefix=*) PATH_PREFIX=$arg_value;;
   esac
