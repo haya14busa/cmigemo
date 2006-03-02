@@ -5,7 +5,7 @@
 "
 " Maintainer:  MURAOKA Taro <koron@tka.att.ne.jp>
 " Modified:    Yasuhiro Matsumoto <mattn_jp@hotmail.com>
-" Last Change: 07-Jun-2003.
+" Last Change: 03-Mar-2006.
 
 " Japanese Description:
 
@@ -13,19 +13,34 @@ if exists('plugin_migemo_disable')
   finish
 endif
 
-function! s:SearchDict()
+function! s:SearchDict2(name)
   let path = $VIM . ',' . &runtimepath
-  let dict = globpath(path, "dict/migemo-dict")
+  let dict = globpath(path, "dict/".a:name)
   if dict == ''
-    let dict = globpath(path, "migemo-dict")
+    let dict = globpath(path, a:name)
   endif
   if dict == ''
-    let dict = '/usr/local/share/migemo/'.&encoding.'/migemo-dict'
+    let dict = '/usr/local/share/migemo/'.a:name
     if !filereadable(dict)
       let dict = ''
     endif
   endif
-  return matchstr(dict, "^[^\<NL>]*")
+  let dict = matchstr(dict, "^[^\<NL>]*")
+  return dict
+endfunction
+
+function! s:SearchDict()
+  let dict = ''
+  if dict == ''
+    let dict = s:SearchDict2('migemo/'.&encoding.'/migemo-dict')
+  endif
+  if dict == ''
+    let dict = s:SearchDict2(&encoding.'/migemo-dict')
+  endif
+  if dict == ''
+    let dict = s:SearchDict2('migemo-dict')
+  endif
+  return dict
 endfunction
 
 if has('migemo')
@@ -48,50 +63,20 @@ else
   nnoremap <silent> <leader>mi :call <SID>MigemoSearch('')<cr>
 
   function! s:MigemoSearch(word)
-    if executable('cmigemo') != ''
-      let retval = a:word != '' ? a:word : input('MIGEMO:')
-      if retval == ''
-        return
-      endif
-      if has('iconv') && $HOMEDRIVE != ''
-        let retval = iconv(retval, 'cp932', 'euc-jp')
-      elseif &encoding != 'euc-jp'
-        let retval = iconv(retval, &encoding, 'euc-jp')
-      endif
-      "let retval = system('cmigemo -v -w "'.retval.'" -d "'.g:migemodict.'"')
-      let retval = system('cmigemo -v -w '.retval.' -d "'.g:migemodict.'"')
-      if retval == ''
-        return
-      endif
-    elseif executable('migemo') != ''
-      if filereadable(g:migemodict.'.idx')
-        let retval = a:word != '' ? a:word : input('MIGEMO:')
-        if retval == ''
-          return
-        endif
-        let retval = system('echo "'.retval.'" | migemo -t egrep -d "'.g:migemodict.'"')
-        if retval == ''
-          return
-        endif
-    if retval[strlen(retval)-1] == "\n"
-      let retval = strpart(retval, 0, strlen(retval)-1)
-    endif
-      else
-        echohl ErrorMsg
-        echo 'Error: migemo dictionary have no index'
-        echohl None
-        return
-      endif
-    else
+    if executable('cmigemo') == ''
       echohl ErrorMsg
-      echo 'Error: cmigemo or migemo is not installed'
+      echo 'Error: cmigemo is not installed'
       echohl None
       return
     endif
-    if has('iconv') && $HOMEDRIVE != ''
-      let retval = iconv(retval, 'euc-jp', 'cp932')
-    elseif &encoding != 'euc-jp'
-      let retval = iconv(retval, 'euc-jp', &encoding)
+  
+    let retval = a:word != '' ? a:word : input('MIGEMO:')
+    if retval == ''
+      return
+    endif
+    let retval = system('cmigemo -v -w "'.retval.'" -d "'.g:migemodict.'"')
+    if retval == ''
+      return
     endif
   
     let @/ = retval
